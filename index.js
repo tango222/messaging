@@ -2,21 +2,29 @@
 
 const express = require("express");
 const mongooose = require("mongoose");
-const { messageSchema, channelSchema } = require( "./schemas");
+const { Message, Channel } = require( "./schemas"); // changed
 
 const mongoEndpoint = "mongodb://localhost:27017/test";
-const port = process.event.PORT || 5011;
+const port = process.env.PORT || 5011;
 
-const Message = model("message", messageSchema);
-const Channel = model("channel", channelSchema);
+// const Message = model("message", messageSchema);
+// const Channel = model("channel", channelSchema);
+
 
 const app = express();
-app.use(json());
+app.use(express.json());
 
-const connect = () => {
-    _connect(mongoEndpoint);
-}
+// const connect = () => {
+//     _connect(mongoEndpoint);
+// }
 
+mongooose.connect(
+    mongoEndpoint,
+    {
+        useCreateIndex: true,
+        useNewUrlParser: true
+    }
+);
 
 //channelhandler
 app.get("/v1/channels", async(req, res) => {
@@ -43,7 +51,8 @@ app.post("/v1/channels", (req, res) => {
         res.status(401).send('User is Unauthorized.');
         return;
     }
-    const {name, description, private} = req.body;
+    // changed private
+    const { name, description, myPrivate } = req.body;
     if (!name){
         res.status(400).send("Name must be Provided.");
         return;
@@ -54,7 +63,7 @@ app.post("/v1/channels", (req, res) => {
     const channel = {
         name, 
         description,
-        private,
+        myPrivate, //changed this too
         members, 
         createdAt, 
         creator, 
@@ -286,11 +295,11 @@ app.delete("/v1/messages/:messageID", (req, res) => {
 });
 
 
-//??
-connect();
-connection.on('error', console.error)
-    .on('disconnected', connect)
-    .once('open', main);
+//?? I really don't know wtf was this
+// connect();
+// connection.on('error', console.error)
+//     .on('disconnected', connect)
+//     .once('open', main);
 
 async function main() {
     app.listen(port, "", () => {

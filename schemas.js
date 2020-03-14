@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-
-const Schema = require('mongoose').Schema;
+//since you declared mongoose i just tidy'd up
+const Schema = mongoose.Schema;
 
 const messageSchema = new Schema({
     id: mongoose.ObjectId, 
@@ -10,8 +10,8 @@ const messageSchema = new Schema({
     creator: {type: String} ,
     editedAt: {type: Date, required:true}
 });
-
-channelSchema = new Schema({
+//added const
+const channelSchema = new Schema({
     id:mongoose.ObjectId, 
     name:{type:String, required:true, unique: true}, 
     description:{type:String}, 
@@ -21,3 +21,9 @@ channelSchema = new Schema({
     creator: {type:String, required:true},
     editedAt: {type:Date}
 });
+
+//added this
+const Message = mongoose.model("message", messageSchema);
+const Channel = mongoose.model("channel", channelSchema);
+
+module.exports = Message, Channel;
