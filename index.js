@@ -1,7 +1,7 @@
 "use strict";
 
 const express = require("express");
-const mongooose = require("mongoose");
+const mongoose = require("mongoose");
 const { Message, Channel } = require( "./schemas"); // changed
 
 const mongoEndpoint = "mongodb://localhost:27017/test";
@@ -14,21 +14,20 @@ const port = process.env.PORT || 5011;
 const app = express();
 app.use(express.json());
 
-// const connect = () => {
-//     _connect(mongoEndpoint);
-// }
+const connect = () => {
+     mongoose.connect(mongoEndpoint);
+ }
 
-mongooose.connect(
-    mongoEndpoint,
-    {
-        useCreateIndex: true,
-        useNewUrlParser: true
-    }
-);
+// mongooose.connect(
+//     mongoEndpoint,
+//     {
+//         useCreateIndex: true,
+//         useNewUrlParser: true
+//     }
+// );
 
 //channelhandler
 app.get("/v1/channels", async(req, res) => {
-    print(req.header("X.User"));
 
     if (req.header("X-User") == ""){
         res.status(401).send('User is Unauthorized.');
@@ -295,11 +294,10 @@ app.delete("/v1/messages/:messageID", (req, res) => {
 });
 
 
-//?? I really don't know wtf was this
-// connect();
-// connection.on('error', console.error)
-//     .on('disconnected', connect)
-//     .once('open', main);
+connect();
+mongoose.connection.on('error', console.error)
+     .on('disconnected', connect)
+     .once('open', main);
 
 async function main() {
     app.listen(port, "", () => {
